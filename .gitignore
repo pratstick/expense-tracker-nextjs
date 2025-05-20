@@ -1,36 +1,143 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# Node.js dependencies
 /node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/patches/
+.yarn/releases/
+.yarn/plugins/
 
-# testing
+# Testing
 /coverage
+/jest-test-results.json
+/test-results/
 
-# next.js
+# Next.js
 /.next/
 /out/
+next.config.js
+next.config.mjs
+next-env.d.ts
 
-# production
+# Production
 /build
+/dist
+/.turbo/
 
-# misc
+# System files
 .DS_Store
-*.pem
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
 
-# debug
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.code-workspace
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+log.txt
+*.log
 
-# local env files
-.env*.local
+# OS-specific
+*.bak
+*.tmp
+*.temp
 
-# vercel
-.vercel
+# Env files
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# typescript
+# Build artifacts
 *.tsbuildinfo
-next-env.d.ts
+*.js.map
+*.css.map
+
+# Security
+*.pem
+*.key
+*.crt
+*.cert
+
+# Vercel
+.vercel/
+
+# Optional: Static site outputs
+/public
+
+# Misc
+*.tgz
+*.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+turbo.json
+.cache/
+.nyc_output/
+.eslintcache
+.husky/_/
+*.orig
+*.rej
+*.patch
+*.snap
+
+# MacOS extended attributes
+*.AppleDouble
+.LSOverride
+
+# Coverage
+.nyc_output/
+coverage/
+
+# Storybook
+out-storybook/
+.storybook-out/
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Firebase
+.firebase/
+.firebaserc
+
+# Netlify
+.netlify/
+netlify.toml
+
+# GitHub workflows (optional)
+/.github/
+
+# VS Code settings (if you'd rather not share at all)
+/.vscode/*
+
+# npm pack artifacts
+*.tgz
+
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.bin
+*.obj
+*.o
+
