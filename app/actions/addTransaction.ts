@@ -1,62 +1,63 @@
 'use server';
-import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
-import { revalidatePath } from "next/cache";
+import { auth } from '@clerk/nextjs/server';
+import { db } from '@/lib/db';
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 
+const transactionSchema = z.object({
+  text: z.string().min(1, 'Description is required').max(100, 'Description must be 100 characters or fewer'),
+  amount: z
+    .preprocess(
+      (val) => (typeof val === 'number' && isNaN(val) ? undefined : val),
+      z
+        .number({ error: 'Amount must be a valid number' })
+        .finite('Amount must be a finite number')
+        .refine((v) => v !== 0, { message: 'Amount cannot be zero' })
+    ),
+});
 
 interface TransactionData {
-    text: string;
-    amount: number;
+  text: string;
+  amount: number;
 }
 
 interface TransactionResult {
-    data?: TransactionData;
-    error?: string
-    
+  data?: TransactionData;
+  error?: string;
 }
 
-async function addTransaction(formData: FormData):
-Promise<TransactionResult> {
-    const textValue = formData.get('text');
-    const amountValue = formData.get('amount');
+async function addTransaction(formData: FormData): Promise<TransactionResult> {
+  const textValue = formData.get('text');
+  const amountValue = formData.get('amount');
 
-    //check input val
-    if (!textValue || textValue == '' || !amountValue){
-        return { error: 'Text or amount is missing'};
-    }
+  const parsed = transactionSchema.safeParse({
+    text: textValue?.toString() ?? '',
+    amount: parseFloat(amountValue?.toString() ?? ''),
+  });
 
-    const text: string = textValue.toString(); //Ensure text is string
-    const amount: number = parseFloat(amountValue.toString()); //parse amount as number
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
 
-    //Get logged in user
-    const { userId } = auth();
-    console.log(userId);
+  const { text, amount } = parsed.data;
 
-    //check for user
-    if (!userId) {
-        return {error: 'User not found'};
-    }
+  const { userId } = auth();
 
-    try {
-        const transactionData: TransactionData = await db.transaction.create({
-            data: {
-                text,
-                amount,
-                userId,
-            }
-        });
+  if (!userId) {
+    return { error: 'User not found' };
+  }
 
-        revalidatePath('/');
-    
-        return { data: transactionData } ;
-        
-    } catch (error) {
-        return {error: 'Transaction not added'};        
-    }
-    
-    
-    
+  try {
+    const transactionData: TransactionData = await db.transaction.create({
+      data: { text, amount, userId },
+    });
+
+    revalidatePath('/');
+
+    return { data: transactionData };
+  } catch (error) {
+    return { error: 'Transaction not added' };
+  }
 }
-
 
 export default addTransaction;

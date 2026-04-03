@@ -1,86 +1,141 @@
-# Expense Tracker Next.js
+# Expense Tracker — Next.js
 
-Expense Tracker Next.js is a powerful and intuitive expense tracking application built with Next.js, Prisma, and Clerk for authentication. This project is bootstrapped with `create-next-app` and utilizes Neon database for data management.
+A production-ready personal finance tracker built with **Next.js 14**, **Prisma**, **Clerk**, and **Tailwind CSS**.
 
-## Features
+---
 
-- **Next.js**: Fast, optimized, and SEO-friendly React framework.
-- **Prisma**: Modern database toolkit to query, migrate and model your data.
-- **Clerk**: Easy-to-use authentication and user management.
-- **Neon Database**: Scalable and efficient database solution.
+## ✨ Features
 
-## Getting Started
+- 🔐 Authentication via [Clerk](https://clerk.com) (sign in / sign up)
+- 💰 Add income and expense transactions
+- 📊 Real-time balance, total income, and total expense summary
+- 🗑 Delete individual transactions (with confirmation)
+- ⚡ Server Actions — no dedicated API routes needed
+- 🎨 Responsive UI with Tailwind CSS
+- ✅ Input validation with [Zod](https://zod.dev)
+- 🔄 Optimistic revalidation via `revalidatePath`
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+---
 
-### Prerequisites
+## 🏗 Architecture
 
-Make sure you have the following installed on your local machine:
+```
+expense-tracker-nextjs/
+├── app/
+│   ├── actions/           # Server Actions (add, delete, fetch transactions)
+│   ├── globals.css        # Tailwind directives + minimal overrides
+│   ├── layout.tsx         # Root layout with ClerkProvider & ToastContainer
+│   └── page.tsx           # Home page with Suspense-wrapped data components
+├── components/
+│   ├── Header.tsx         # Navigation bar with Clerk auth buttons
+│   ├── Guest.tsx          # Landing screen for unauthenticated users
+│   ├── Balance.tsx        # Current balance (async server component)
+│   ├── IncomeExpense.tsx  # Income/expense summary (async server component)
+│   ├── AddTransaction.tsx # Add-transaction form (client component)
+│   ├── TransactionList.tsx# Transaction history (async server component)
+│   └── TransactionItem.tsx# Single transaction row (client component)
+├── lib/
+│   ├── db.ts              # Prisma client singleton (dev-safe)
+│   ├── CheckUser.ts       # Sync Clerk user ↔ Prisma User table
+│   └── utils.ts           # Shared helpers (e.g. addCommas)
+├── prisma/
+│   ├── schema.prisma      # Data models: User, Transaction
+│   └── migrations/        # SQL migration history
+├── types/
+│   └── Transaction.ts     # Shared TypeScript interface
+├── .env.example           # Required environment variables template
+└── middleware.ts          # Clerk middleware (protects all routes)
+```
 
-- [Node.js](https://nodejs.org/) (>=14.0.0)
-- [npm](https://www.npmjs.com/) (comes with Node.js)
-- [Docker](https://www.docker.com/) (for running Neon database locally, optional)
+---
 
-### Installation
+## 🚀 Getting Started
 
-1. Clone the repository:
+### 1. Clone & install dependencies
 
-   ```bash
-   git clone https://github.com/yourusername/expense-tracker-nextjs.git
-   cd expense-tracker-nextjs
-   ```
+```bash
+git clone https://github.com/pratstick/expense-tracker-nextjs.git
+cd expense-tracker-nextjs
+npm install
+```
 
-2. Install the dependencies:
+### 2. Set up environment variables
 
-   ```bash
-   npm install
-   ```
+```bash
+cp .env.example .env.local
+```
 
-3. Set up the environment variables:
+Edit `.env.local` and fill in:
 
-   Create a `.env` file in the root of your project and add the following variables:
+| Variable | Where to find it |
+|---|---|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | [Clerk Dashboard](https://dashboard.clerk.com) → API Keys |
+| `CLERK_SECRET_KEY` | Clerk Dashboard → API Keys |
+| `DATABASE_URL` | Your Postgres provider (Neon, Supabase, Railway, etc.) |
 
-   ```env
-   DATABASE_URL=your_neon_database_url
-   NEXT_PUBLIC_CLERK_FRONTEND_API=your_clerk_frontend_api
-   CLERK_API_KEY=your_clerk_api_key
-   ```
+### 3. Run database migrations
 
-4. Set up the database:
+```bash
+npx prisma migrate dev
+```
 
-   Initialize the Prisma schema and migrate the database:
+### 4. Start the development server
 
-   ```bash
-   npx prisma migrate dev
-   ```
+```bash
+npm run dev
+```
 
-5. Run the development server:
+Open [http://localhost:3000](http://localhost:3000).
 
-   ```bash
-   npm run dev
-   ```
+---
 
-   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🗄 Database
 
-## Deployment
+The app uses **PostgreSQL** via [Prisma ORM](https://www.prisma.io).
 
-To deploy the project, follow the deployment instructions for your preferred hosting service. Make sure to set the environment variables in your hosting platform.
+Recommended free-tier providers:
+- [Neon](https://neon.tech) (serverless Postgres)
+- [Supabase](https://supabase.com)
+- [Railway](https://railway.app)
 
-## Built With
+---
 
-- [Next.js](https://nextjs.org/) - The React Framework
-- [Prisma](https://www.prisma.io/) - Next-generation ORM
-- [Clerk](https://clerk.dev/) - Authentication and user management
-- [Neon Database](https://neon.tech/) - Serverless Postgres Database
+## 📦 Tech Stack
 
-## Contributing
+| Layer | Technology |
+|---|---|
+| Framework | [Next.js 14](https://nextjs.org) (App Router) |
+| Auth | [Clerk](https://clerk.com) v5 |
+| Database ORM | [Prisma](https://www.prisma.io) v5 |
+| Styling | [Tailwind CSS](https://tailwindcss.com) v3 |
+| Validation | [Zod](https://zod.dev) v4 |
+| Notifications | [react-toastify](https://fkhadra.github.io/react-toastify/) |
 
-Feel free to submit issues and pull requests. Contributions are always welcome!
+---
 
-## License
+## 🚢 Deployment (Vercel)
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+1. Push the repository to GitHub.
+2. Import the project in [Vercel](https://vercel.com).
+3. Set the environment variables (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `DATABASE_URL`) in the Vercel project settings.
+4. Deploy — Vercel will run `npm run build` automatically.
 
-## Acknowledgments
+> The `postinstall` script (`prisma generate`) runs automatically during `npm install`, so Prisma Client is always up to date in CI/CD.
 
-This project wouldn't be possible without the [tutorials and resources](https://github.com/bradtraversy) provided by [Brad Traversy](https://github.com/bradtraversy). Thank you for your invaluable guidance!
+---
+
+## 🧪 Scripts
+
+| Script | Description |
+|---|---|
+| `npm run dev` | Start local development server |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm run lint` | ESLint check |
+
+---
+
+## 📄 License
+
+MIT — see [LICENSE](LICENSE).
+
